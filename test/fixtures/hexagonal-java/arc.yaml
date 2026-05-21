@@ -1,0 +1,39 @@
+schemaVersion: "1"
+project:
+  name: fixture-service
+  language: java
+  rootPackage: com.example.fixture
+  sourceRoot: "."
+profile: hexagonal
+
+layers:
+  - id: port.in
+    path: "src/main/java/**/port/in/**"
+    suffix: UseCase
+  - id: adapter.in.web
+    path: "src/main/java/**/adapter/in/web/**"
+    suffix: Controller
+  - id: domain
+    path: "src/main/java/**/domain/**"
+
+kinds:
+  rest_endpoint:
+    steps:
+      - generate:
+          layer: port.in
+          template: .arc/templates/UseCase.java.hbs
+          namingKey: useCase
+
+naming:
+  useCase: "src/main/java/{package}/port/in/{Name}UseCase.java"
+
+rules:
+  - id: port-in-no-representation
+    when:
+      layer: port.in
+    forbidImports:
+      - "*Representation"
+    message: "port.in não deve importar Representation"
+
+validators: []
+docs: []
