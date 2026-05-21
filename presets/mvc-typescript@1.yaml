@@ -1,0 +1,62 @@
+schemaVersion: "1"
+project:
+  name: my-app
+  language: typescript
+  sourceRoot: "."
+profile: mvc
+
+layers:
+  - id: views
+    path: "src/views/**"
+    description: Views / UI
+  - id: controllers
+    path: "src/controllers/**"
+    description: Controllers HTTP
+    suffix: Controller
+    mayDependOn: [services]
+  - id: services
+    path: "src/services/**"
+    description: Lógica de aplicação
+    suffix: Service
+    mayDependOn: [api]
+  - id: api
+    path: "src/api/**"
+    description: Clientes e DTOs externos
+    suffix: Client
+
+kinds:
+  rest_endpoint:
+    description: Feature REST MVC
+    steps:
+      - generate:
+          layer: controllers
+          template: .arc/templates/Controller.ts.hbs
+          namingKey: controller
+      - generate:
+          layer: services
+          template: .arc/templates/Service.ts.hbs
+          namingKey: service
+    tests:
+      mirror: true
+      pathReplace:
+        - from: "/src/"
+          to: "/src/"
+        - from: ".ts"
+          to: ".test.ts"
+
+naming:
+  controller: "src/controllers/{name}Controller.ts"
+  service: "src/services/{name}Service.ts"
+
+rules:
+  - id: controllers-no-api-direct
+    when:
+      layer: controllers
+    forbidImports:
+      - "src/api/"
+    message: "controllers devem usar services, não api diretamente"
+
+validators: []
+
+docs:
+  - "README.md"

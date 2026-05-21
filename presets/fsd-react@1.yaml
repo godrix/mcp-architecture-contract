@@ -1,0 +1,57 @@
+schemaVersion: "1"
+project:
+  name: my-react-app
+  language: typescript
+  sourceRoot: "."
+profile: fsd
+
+layers:
+  - id: app
+    path: "src/app/**"
+    description: App shell e providers
+  - id: pages
+    path: "src/pages/**"
+    description: Páginas
+    mayDependOn: [widgets, features, entities, shared]
+  - id: widgets
+    path: "src/widgets/**"
+    description: Widgets compostos
+    mayDependOn: [features, entities, shared]
+  - id: features
+    path: "src/features/**"
+    description: Features
+    mayDependOn: [entities, shared]
+  - id: entities
+    path: "src/entities/**"
+    description: Entidades
+    mayDependOn: [shared]
+  - id: shared
+    path: "src/shared/**"
+    description: Utilitários compartilhados
+
+kinds:
+  feature:
+    description: Nova feature FSD
+    steps:
+      - manual: "Definir public API da feature (index.ts)"
+      - generate:
+          layer: features
+          template: .arc/templates/Feature.tsx.hbs
+          namingKey: feature
+
+naming:
+  feature: "src/features/{name}/ui/{Name}.tsx"
+
+rules:
+  - id: shared-no-features
+    when:
+      layer: shared
+    forbidImports:
+      - "features/"
+      - "@/features"
+    message: "shared não deve importar features"
+
+validators: []
+
+docs:
+  - "README.md"

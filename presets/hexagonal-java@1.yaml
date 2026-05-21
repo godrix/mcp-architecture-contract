@@ -1,0 +1,80 @@
+schemaVersion: "1"
+project:
+  name: my-service
+  language: java
+  rootPackage: com.example.myapp
+  sourceRoot: "."
+profile: hexagonal
+
+layers:
+  - id: port.in
+    path: "src/main/java/**/port/in/**"
+    description: Portas de entrada (API)
+    suffix: UseCase
+    mayDependOn: [domain]
+    mustNotDependOn: [adapter.out, adapter.in.web]
+  - id: port.out
+    path: "src/main/java/**/port/out/**"
+    description: Portas de saída
+    suffix: Port
+    mayDependOn: [domain]
+  - id: adapter.in.web
+    path: "src/main/java/**/adapter/in/web/**"
+    description: Adaptadores REST
+    suffix: Controller
+    mayDependOn: [port.in, domain]
+  - id: adapter.out.persistence
+    path: "src/main/java/**/adapter/out/persistence/**"
+    description: Persistência
+    suffix: Adapter
+    mayDependOn: [port.out, domain]
+  - id: domain
+    path: "src/main/java/**/domain/**"
+    description: Domínio
+    suffix: ""
+
+kinds:
+  rest_endpoint:
+    description: Endpoint REST completo (use case + controller + testes)
+    steps:
+      - manual: "Definir contrato OpenAPI do endpoint"
+      - generate:
+          layer: port.in
+          template: .arc/templates/UseCase.java.hbs
+          namingKey: useCase
+      - generate:
+          layer: adapter.in.web
+          template: .arc/templates/Controller.java.hbs
+          namingKey: controller
+    tests:
+      mirror: true
+      pathReplace:
+        - from: "/src/main/java/"
+          to: "/src/test/java/"
+
+naming:
+  useCase: "src/main/java/{package}/port/in/{Name}UseCase.java"
+  controller: "src/main/java/{package}/adapter/in/web/{Name}Controller.java"
+  representation: "src/main/java/{package}/adapter/in/web/{Name}Representation.java"
+
+rules:
+  - id: port-in-no-representation
+    when:
+      layer: port.in
+    forbidImports:
+      - "*Representation"
+      - "*.adapter.in.web.*Representation"
+    message: "port.in não deve importar Representation (adapter.in.web)"
+
+  - id: domain-no-spring
+    when:
+      layer: domain
+    forbidImports:
+      - "org.springframework"
+    message: "domain não deve depender de Spring"
+
+validators: []
+
+docs:
+  - "README.md"
+  - "docs/**/*.md"
