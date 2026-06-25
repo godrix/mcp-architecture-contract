@@ -1,0 +1,205 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://architecture-contract.local/arc-manifest.schema.json",
+  "title": "ARC Architecture Contract Manifest",
+  "description": "arc.yaml manifest for @godrix/mcp-architecture-contract (Architecture Contract). Not to be confused with OpenJS Architect (arc.codes).",
+  "type": "object",
+  "required": ["schemaVersion", "project", "profile", "layers", "kinds", "naming"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1" },
+    "extends": {
+      "type": "string",
+      "description": "Preset embutido (id@version) ou caminho para manifest.yaml de plugin local"
+    },
+    "parent": { "type": "string" },
+    "project": {
+      "type": "object",
+      "required": ["name", "language"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "language": {
+          "type": "string",
+          "enum": ["java", "typescript", "kotlin", "other"]
+        },
+        "rootPackage": { "type": "string" },
+        "sourceRoot": { "type": "string" }
+      }
+    },
+    "profile": { "type": "string" },
+    "layers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/layer" }
+    },
+    "kinds": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/kind" }
+    },
+    "naming": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "rules": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rule" }
+    },
+    "validators": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/validator" }
+    },
+    "docs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "slices": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/slice" }
+    }
+  },
+  "$defs": {
+    "layer": {
+      "type": "object",
+      "required": ["id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "path": { "type": "string" },
+        "description": { "type": "string" },
+        "suffix": { "type": "string" },
+        "mayDependOn": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "mustNotDependOn": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "kind": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": { "type": "string" },
+        "variables": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": ["manual"],
+                "additionalProperties": false,
+                "properties": { "manual": { "type": "string" } }
+              },
+              {
+                "type": "object",
+                "required": ["generate"],
+                "additionalProperties": false,
+                "properties": {
+                  "generate": {
+                    "type": "object",
+                    "required": ["layer", "template"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "layer": { "type": "string" },
+                      "template": { "type": "string" },
+                      "namingKey": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "tests": {
+          "type": "object",
+          "required": ["mirror"],
+          "additionalProperties": false,
+          "properties": {
+            "mirror": { "type": "boolean" },
+            "pathReplace": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["from", "to"],
+                "additionalProperties": false,
+                "properties": {
+                  "from": { "type": "string" },
+                  "to": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "required": ["id", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "message": { "type": "string" },
+        "when": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "layer": {
+              "oneOf": [
+                { "type": "string" },
+                { "type": "array", "items": { "type": "string" } }
+              ]
+            }
+          }
+        },
+        "forbidImports": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "requireImplements": { "type": "string" },
+        "requireSuffix": { "type": "string" },
+        "severity": {
+          "type": "string",
+          "enum": ["error", "warn"],
+          "default": "error"
+        }
+      }
+    },
+    "validator": {
+      "type": "object",
+      "required": ["id", "type", "run"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "const": "command" },
+        "run": { "type": "string" },
+        "optional": { "type": "boolean" }
+      }
+    },
+    "slice": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entry": { "type": "string" },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["role"],
+            "additionalProperties": false,
+            "properties": {
+              "role": { "type": "string" },
+              "path": { "type": "string" },
+              "class": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+schemaVersion: "1"
+extends: hexagonal-java@1
+
+profile: hexagonal
+
+layers:
+  - id: port.in
+    path: "src/main/java/**/port/in/**"
+    suffix: UseCase
+    mayDependOn: [domain]
+    mustNotDependOn: [adapter.in.web]
+
+kinds:
+  rest_endpoint:
+    description: Endpoint REST customizado
+    steps:
+      - generate:
+          layer: port.in
+          template: templates/UseCase.java.hbs
+          namingKey: useCase
+
+naming:
+  useCase: "src/main/java/{package}/port/in/{Name}UseCase.java"
+
+rules:
+  - id: port-in-no-representation
+    when:
+      layer: port.in
+    forbidImports:
+      - "*Representation"
+    message: "port.in não deve importar Representation"
+
+validators: []
+docs: []

@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.3",
   "name": "@godrix/mcp-architecture-contract",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Architecture Contract MCP — discovery, scaffolding and validation via arc.yaml.",
   "author": {
     "name": "Godrix"
@@ -11,14 +11,20 @@
     "entry_point": "dist/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/dist/index.js"],
+      "args": [
+        "${__dirname}/dist/index.js"
+      ],
       "env": {}
     }
   },
   "tools_generated": true,
   "license": "MIT",
   "compatibility": {
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
     "runtimes": {
       "node": ">=20.0.0"
     }
