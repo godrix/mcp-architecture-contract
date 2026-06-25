@@ -1,14 +1,15 @@
 import { describe, expect, it } from "vitest";
+import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { existsSync, mkdtempSync, cpSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { arcInit } from "../src/tools/init.js";
+import { fileURLToPath } from "node:url";
+import { arcInit, arcInitPlugin } from "../src/tools/init.js";
 import { arcScaffold } from "../src/tools/scaffold.js";
+import { withArcYamlSchemaDirective } from "../src/manifest/arcYamlHeader.js";
 
-const packageRoot = join(
+const pluginFixtures = join(
   fileURLToPath(new URL(".", import.meta.url)),
-  ".."
+  "fixtures/plugin-local"
 );
 
 describe("scaffold", () => {
@@ -49,5 +50,43 @@ describe("scaffold", () => {
         join(tmp, "src/main/java/com/example/myapp/port/in/BarUseCase.java")
       )
     ).toBe(true);
+  });
+
+  it("resolves templates from local plugin fixture", () => {
+    const result = arcScaffold({
+      workspaceRoot: pluginFixtures,
+      kind: "rest_endpoint",
+      name: "PluginCase",
+      dryRun: true,
+    });
+    expect(result.created.some((p) => p.includes("PluginCaseUseCase.java"))).toBe(
+      true
+    );
+  });
+
+  it("scaffold via plugin-init workflow", () => {
+    const tmp = mkdtempSync(join(tmpdir(), "arc-plugin-scaffold-"));
+    arcInitPlugin({
+      workspaceRoot: tmp,
+      pluginId: "custom",
+      preset: "hexagonal-java@1",
+    });
+
+    const arcYaml = withArcYamlSchemaDirective(`schemaVersion: "1"
+extends: ./.arc/plugins/custom/manifest.yaml
+project:
+  name: test
+  language: java
+  rootPackage: com.example.test
+`);
+    writeFileSync(join(tmp, "arc.yaml"), arcYaml, "utf-8");
+
+    const result = arcScaffold({
+      workspaceRoot: tmp,
+      kind: "rest_endpoint",
+      name: "Qux",
+      dryRun: true,
+    });
+    expect(result.created.length).toBeGreaterThan(0);
   });
 });

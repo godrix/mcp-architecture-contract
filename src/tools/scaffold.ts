@@ -1,10 +1,10 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
-import Handlebars from "handlebars";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { getLoadedManifest, manifestErrorMessage } from "../context.js";
 import { resolveKind } from "../core/resolveKind.js";
 import { buildNamingContext } from "../utils/naming.js";
 import { getLayerById } from "../utils/layers.js";
+import { readAndCompileTemplate } from "../utils/templates.js";
 
 export interface ArcScaffoldInput {
   workspaceRoot?: string;
@@ -22,26 +22,6 @@ export interface ArcScaffoldOutput {
   manualSteps: string[];
 }
 
-function compileTemplate(
-  workspaceRoot: string,
-  templateRel: string,
-  ctx: Record<string, string>
-): string {
-  const paths = [
-    resolve(workspaceRoot, templateRel),
-    resolve(workspaceRoot, ".arc/templates", templateRel.replace(/^\.arc\/templates\//, "")),
-  ];
-  for (const p of paths) {
-    try {
-      const raw = readFileSync(p, "utf-8");
-      return Handlebars.compile(raw)(ctx);
-    } catch {
-      continue;
-    }
-  }
-  throw new Error(`Template não encontrado: ${templateRel}`);
-}
-
 export function arcScaffold(input: ArcScaffoldInput): ArcScaffoldOutput {
   const dryRun = input.dryRun !== false;
   const overwrite = input.overwrite ?? false;
@@ -50,7 +30,9 @@ export function arcScaffold(input: ArcScaffoldInput): ArcScaffoldOutput {
   const errors: string[] = [];
 
   try {
-    const { manifest, workspaceRoot } = getLoadedManifest(input.workspaceRoot);
+    const { manifest, workspaceRoot, pluginRoots } = getLoadedManifest(
+      input.workspaceRoot
+    );
     const { files, manualSteps } = resolveKind(
       workspaceRoot,
       manifest,
@@ -79,7 +61,12 @@ export function arcScaffold(input: ArcScaffoldInput): ArcScaffoldOutput {
           layer: ctx.layer,
           projectName: ctx.projectName,
         };
-        const content = compileTemplate(workspaceRoot, file.template, hbCtx);
+        const content = readAndCompileTemplate(
+          workspaceRoot,
+          file.template,
+          hbCtx,
+          pluginRoots
+        );
         const abs = resolve(workspaceRoot, file.relativePath);
         mkdirSync(dirname(abs), { recursive: true });
         writeFileSync(abs, content, "utf-8");
@@ -96,3 +83,5 @@ export function arcScaffold(input: ArcScaffoldInput): ArcScaffoldOutput {
     throw new Error(manifestErrorMessage(err));
   }
 }
+
+export { readAndCompileTemplate };

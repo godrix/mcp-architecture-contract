@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=./.arc/arc-manifest.schema.json
+
+schemaVersion: "1"
+extends: ./.arc/plugins/custom/manifest.yaml
+
+project:
+  name: plugin-local-fixture
+  language: java
+  rootPackage: com.example.plugin
+  sourceRoot: "."

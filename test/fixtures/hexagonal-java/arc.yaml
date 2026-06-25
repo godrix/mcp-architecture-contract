@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=./.arc/arc-manifest.schema.json
+
 schemaVersion: "1"
 project:
   name: fixture-service
@@ -10,9 +12,12 @@ layers:
   - id: port.in
     path: "src/main/java/**/port/in/**"
     suffix: UseCase
+    mayDependOn: [domain]
+    mustNotDependOn: [adapter.in.web]
   - id: adapter.in.web
     path: "src/main/java/**/adapter/in/web/**"
     suffix: Controller
+    mayDependOn: [port.in, domain]
   - id: domain
     path: "src/main/java/**/domain/**"
 

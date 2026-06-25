@@ -7,6 +7,8 @@ export interface ArcFindInput {
   workspaceRoot?: string;
   query: string;
   layerId?: string;
+  role?: string;
+  suffix?: string;
   limit?: number;
 }
 
@@ -14,6 +16,25 @@ export interface ArcFindMatch {
   path: string;
   layerId: string;
   inferredRole: string;
+  score: number;
+}
+
+function scoreMatch(
+  query: string,
+  fileName: string,
+  rel: string,
+  layerSuffix?: string
+): number {
+  const q = query.toLowerCase();
+  const fn = fileName.toLowerCase();
+  const rp = rel.toLowerCase();
+  let score = 0;
+  if (fn === q) score += 100;
+  else if (fn.startsWith(q)) score += 80;
+  else if (fn.includes(q)) score += 50;
+  if (rp.includes(q)) score += 20;
+  if (layerSuffix && fn.includes(layerSuffix.toLowerCase())) score += 10;
+  return score;
 }
 
 export async function arcFind(input: ArcFindInput): Promise<{ matches: ArcFindMatch[] }> {
@@ -30,14 +51,12 @@ export async function arcFind(input: ArcFindInput): Promise<{ matches: ArcFindMa
 
     const matches: ArcFindMatch[] = [];
     for (const { path, layer } of allFiles) {
+      if (input.suffix && !(layer.suffix ?? "").includes(input.suffix)) {
+        continue;
+      }
+
       const rel = toRelativePath(workspaceRoot, path);
       const fileName = basename(path);
-      const suffixMatch = layer.suffix && fileName.includes(layer.suffix);
-      const nameMatch =
-        fileName.toLowerCase().includes(query) ||
-        rel.toLowerCase().includes(query);
-
-      if (!nameMatch && !suffixMatch) continue;
 
       let inferredRole = layer.id;
       for (const [role, pattern] of Object.entries(manifest.naming)) {
@@ -47,15 +66,23 @@ export async function arcFind(input: ArcFindInput): Promise<{ matches: ArcFindMa
         }
       }
 
+      if (input.role && inferredRole !== input.role && layer.id !== input.role) {
+        continue;
+      }
+
+      const score = scoreMatch(query, fileName, rel, layer.suffix);
+      if (score <= 0 && query.length > 0) continue;
+
       matches.push({
         path: rel,
         layerId: layer.id,
         inferredRole,
+        score,
       });
-      if (matches.length >= limit) break;
     }
 
-    return { matches };
+    matches.sort((a, b) => b.score - a.score);
+    return { matches: matches.slice(0, limit) };
   } catch (err) {
     throw new Error(manifestErrorMessage(err));
   }

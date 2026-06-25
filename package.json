@@ -1,22 +1,28 @@
 {
-  "name": "arc-mcp",
-  "version": "1.0.0",
+  "name": "@godrix/mcp-architecture-contract",
+  "version": "1.1.0",
   "description": "Architecture Contract MCP — agnostic architecture discovery, scaffolding and validation via arc.yaml",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "arc-mcp": "dist/index.js"
+    "mcp-architecture-contract": "dist/index.js"
   },
   "files": [
     "dist",
     "presets",
-    "templates"
+    "templates",
+    ".arc",
+    "SKILL.md",
+    "README.md"
   ],
   "scripts": {
     "build": "tsc && node scripts/copy-assets.mjs",
+    "prepare": "npm run build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "pack:mcpb": "npm run build && npx --yes @anthropic-ai/mcpb pack",
+    "pack:mcpb:slim": "npm run build && rm -rf node_modules && npm ci --omit=dev --ignore-scripts && npx --yes @anthropic-ai/mcpb pack"
   },
   "engines": {
     "node": ">=20"
@@ -24,10 +30,20 @@
   "keywords": [
     "mcp",
     "architecture",
+    "architecture-contract",
     "hexagonal",
-    "arc.yaml"
+    "arc.yaml",
+    "scaffolding"
   ],
+  "author": "Godrix",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/godrix/mcp-architecture-contract.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
     "deepmerge": "^4.3.1",

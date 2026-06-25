@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
 
-for (const dir of ["presets", "templates"]) {
+for (const dir of ["presets", "templates", ".arc"]) {
   const src = join(root, dir);
   const dest = join(dist, dir);
   if (existsSync(src)) {

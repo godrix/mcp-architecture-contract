@@ -25,4 +25,19 @@ describe("validate", () => {
       result.violations.some((v) => v.file.includes("BadUseCase.java"))
     ).toBe(true);
   });
+
+  it("detects layer dependency violations (mustNotDependOn)", async () => {
+    const result = await arcValidate({
+      workspaceRoot: fixtures,
+      paths: [
+        "src/main/java/com/example/fixture/port/in/BadUseCase.java",
+      ],
+    });
+
+    expect(
+      result.violations.some((v) =>
+        v.ruleId.startsWith("layer-deps-port.in->adapter.in.web")
+      )
+    ).toBe(true);
+  });
 });

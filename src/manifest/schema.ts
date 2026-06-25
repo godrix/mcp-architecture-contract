@@ -13,6 +13,7 @@ export const kindStepSchema = z.union([
 
 export const kindSchema = z.object({
   description: z.string().optional(),
+  variables: z.record(z.string()).optional(),
   steps: z.array(kindStepSchema).optional(),
   tests: z
     .object({
@@ -43,6 +44,7 @@ export const ruleSchema = z.object({
   forbidImports: z.array(z.string()).optional(),
   requireImplements: z.string().optional(),
   requireSuffix: z.string().optional(),
+  severity: z.enum(["error", "warn"]).optional().default("error"),
   message: z.string(),
 });
 
@@ -84,7 +86,13 @@ export const arcManifestSchema = z.object({
   slices: z.record(sliceSchema).optional(),
 });
 
+/** Plugin/preset manifest — project optional until merged into root arc.yaml */
+export const arcPluginManifestSchema = arcManifestSchema.extend({
+  project: arcManifestSchema.shape.project.optional(),
+});
+
 export type ArcManifest = z.infer<typeof arcManifestSchema>;
+export type ArcPluginManifest = z.infer<typeof arcPluginManifestSchema>;
 export type Layer = z.infer<typeof layerSchema>;
 export type Kind = z.infer<typeof kindSchema>;
 export type KindStep = z.infer<typeof kindStepSchema>;

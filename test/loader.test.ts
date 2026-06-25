@@ -7,10 +7,16 @@ import {
   loadPresetFile,
 } from "../src/manifest/loader.js";
 import { mergeManifests } from "../src/manifest/merge.js";
+import { parseExtendsRef } from "../src/manifest/pluginRef.js";
 
 const fixtures = join(
   fileURLToPath(new URL(".", import.meta.url)),
   "fixtures/hexagonal-java"
+);
+
+const pluginFixtures = join(
+  fileURLToPath(new URL(".", import.meta.url)),
+  "fixtures/plugin-local"
 );
 
 describe("loader", () => {
@@ -39,5 +45,23 @@ describe("loader", () => {
     });
     expect(child.project.name).toBe("child");
     expect(child.layers.length).toBeGreaterThan(0);
+  });
+
+  it("loads local plugin via extends path", () => {
+    const loaded = loadManifest(pluginFixtures);
+    expect(loaded.extendsRef).toContain("plugins/custom/manifest.yaml");
+    expect(loaded.pluginRoots.length).toBeGreaterThan(0);
+    expect(loaded.manifest.kinds.rest_endpoint).toBeDefined();
+    expect(loaded.manifest.project.name).toBe("plugin-local-fixture");
+  });
+
+  it("parseExtendsRef resolves preset vs file", () => {
+    expect(parseExtendsRef("hexagonal-java@1", "/tmp").type).toBe("preset");
+    const file = parseExtendsRef(
+      "./.arc/plugins/custom/manifest.yaml",
+      pluginFixtures
+    );
+    expect(file.type).toBe("file");
+    expect(file.resolvedPath).toContain("manifest.yaml");
   });
 });

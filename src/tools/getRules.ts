@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { getLoadedManifest, manifestErrorMessage } from "../context.js";
-import { globDocs } from "../utils/glob.js";
+import { globDocs, globAllLayerFiles } from "../utils/glob.js";
 import { toRelativePath } from "../utils/paths.js";
 
 const MAX_SNIPPET_BYTES = 8192;
@@ -15,6 +15,7 @@ export interface ArcGetRulesOutput {
   rules: unknown[];
   docPaths: string[];
   snippets?: Record<string, string>;
+  examplesByLayer?: Record<string, string[]>;
 }
 
 export async function arcGetRules(
@@ -50,11 +51,20 @@ export async function arcGetRules(
       }
     }
 
+    const examplesByLayer: Record<string, string[]> = {};
+    for (const layer of layers) {
+      const files = await globAllLayerFiles(workspaceRoot, manifest, layer.id);
+      examplesByLayer[layer.id] = files
+        .slice(0, 3)
+        .map((f) => toRelativePath(workspaceRoot, f.path));
+    }
+
     return {
       layers,
       rules,
       docPaths,
       snippets: Object.keys(snippets).length ? snippets : undefined,
+      examplesByLayer,
     };
   } catch (err) {
     throw new Error(manifestErrorMessage(err));
