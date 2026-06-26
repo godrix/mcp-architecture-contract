@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://architecture-contract.local/arc-manifest.schema.json",
   "title": "ARC Architecture Contract Manifest",
-  "description": "arc.yaml manifest for @godrix/mcp-architecture-contract (Architecture Contract). Not to be confused with OpenJS Architect (arc.codes).",
+  "description": "arc.yaml manifest for @godrix/architecture-contract-mcp (Architecture Contract). Not to be confused with OpenJS Architect (arc.codes).",
   "type": "object",
   "required": ["schemaVersion", "project", "profile", "layers", "kinds", "naming"],
   "additionalProperties": false,

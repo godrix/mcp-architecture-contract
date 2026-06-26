@@ -1,5 +1,5 @@
 ---
-name: mcp-architecture-contract
+name: architecture-contract-mcp
 description: >-
   Use ao criar classes, endpoints ou features em projetos com arc.yaml. Antes de
   gerar código, chame arc_load e arc_resolve; confirme com o usuário; depois
@@ -8,7 +8,7 @@ description: >-
 
 # Architecture Contract MCP
 
-Este repositório expõe o servidor MCP **Architecture Contract** (`@godrix/mcp-architecture-contract`). O contrato arquitetural vive em `arc.yaml` na raiz do projeto alvo — o MCP não assume hexagonal, MVC ou FSD por padrão.
+Este repositório expõe o servidor MCP **Architecture Contract** (`@godrix/architecture-contract-mcp`). O contrato arquitetural vive em `arc.yaml` na raiz do projeto alvo — o MCP não assume hexagonal, MVC ou FSD por padrão.
 
 ## Fluxo obrigatório antes de criar classes
 

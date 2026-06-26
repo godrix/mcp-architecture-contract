@@ -1,11 +1,11 @@
-# @godrix/mcp-architecture-contract
+# @godrix/architecture-contract-mcp
 
 [![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en-US/install-mcp?name=architecture-contract&config=eyJjb21tYW5kIjoibnB4IC15IEBnb2RyaXgvbWNwLWFyY2hpdGVjdHVyZS1jb250cmFjdCJ9)
 
 **Architecture Contract MCP (ARC)** — agnostic MCP server that reads `arc.yaml` from the workspace and exposes tools to map layers, trace slices, generate scaffolding, and validate architectural rules.
 
-- **MCP server name:** `@godrix/mcp-architecture-contract`
-- **Binary:** `mcp-architecture-contract`
+- **MCP server name:** `@godrix/architecture-contract-mcp`
+- **Binary:** `architecture-contract-mcp`
 - **Tool prefix:** `arc_*` (unchanged)
 - **Node:** 20+
 
@@ -20,7 +20,7 @@ No clone or local build required — the published npm package includes compiled
   "mcpServers": {
     "architecture-contract": {
       "command": "npx",
-      "args": ["-y", "@godrix/mcp-architecture-contract"],
+      "args": ["-y", "@godrix/architecture-contract-mcp"],
       "env": {}
     }
   }
@@ -32,10 +32,10 @@ Restart your MCP client after saving. Or use the **Install MCP Server** button a
 ### Global install (alternative)
 
 ```bash
-npm install -g @godrix/mcp-architecture-contract
+npm install -g @godrix/architecture-contract-mcp
 ```
 
-Then use `"command": "mcp-architecture-contract"` in `mcp.json`.
+Then use `"command": "architecture-contract-mcp"` in `mcp.json`.
 
 ## Local development
 
@@ -73,8 +73,8 @@ node dist/index.js scaffold --kind rest_endpoint --name Foo --workspace /path/to
 Or via bin:
 
 ```bash
-mcp-architecture-contract validate --workspace /path/to/project
-mcp-architecture-contract scaffold --kind rest_endpoint --name Foo --write
+architecture-contract-mcp validate --workspace /path/to/project
+architecture-contract-mcp scaffold --kind rest_endpoint --name Foo --write
 ```
 
 Exit code `1` when there are `error` violations or a validator fails.
@@ -238,10 +238,10 @@ npx @modelcontextprotocol/inspector node dist/index.js
 
 | Before | After |
 |--------|-------|
-| npm package `arc-mcp` | `@godrix/mcp-architecture-contract` |
+| npm package `arc-mcp` | `@godrix/architecture-contract-mcp` |
 | Folder `arc-mcp` | `mcp-architecture-contract` |
-| bin `arc-mcp` | `mcp-architecture-contract` |
-| MCP server name `arc` | `@godrix/mcp-architecture-contract` |
+| bin `arc-mcp` | `architecture-contract-mcp` |
+| MCP server name `arc` | `@godrix/architecture-contract-mcp` |
 | Tool names `arc_*` | unchanged |
 
 ## License

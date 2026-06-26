@@ -30,7 +30,7 @@ export async function runCli(argv: string[]): Promise<number> {
     const workspaceRoot = parseArg(rest, "--workspace") ?? process.cwd();
     const dryRun = !rest.includes("--write");
     if (!kind || !name) {
-      console.error("Usage: mcp-architecture-contract scaffold --kind <kind> --name <Name> [--write]");
+      console.error("Usage: architecture-contract-mcp scaffold --kind <kind> --name <Name> [--write]");
       return 1;
     }
     const result = arcScaffold({ workspaceRoot, kind, name, dryRun });
@@ -39,12 +39,12 @@ export async function runCli(argv: string[]): Promise<number> {
   }
 
   if (command === "help" || command === "--help" || command === "-h") {
-    console.log(`mcp-architecture-contract — Architecture Contract MCP
+    console.log(`architecture-contract-mcp — Architecture Contract MCP
 
 Usage:
-  mcp-architecture-contract                          Start MCP server (stdio)
-  mcp-architecture-contract validate [--workspace] [--run-validators]
-  mcp-architecture-contract scaffold --kind K --name Name [--workspace] [--write]
+  architecture-contract-mcp                          Start MCP server (stdio)
+  architecture-contract-mcp validate [--workspace] [--run-validators]
+  architecture-contract-mcp scaffold --kind K --name Name [--workspace] [--write]
 `);
     return 0;
   }

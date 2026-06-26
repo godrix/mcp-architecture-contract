@@ -13,7 +13,7 @@ async function main(): Promise<void> {
 
   const server = new McpServer(
     {
-      name: "@godrix/mcp-architecture-contract",
+      name: "@godrix/architecture-contract-mcp",
       title: "Architecture Contract MCP",
       version: "1.1.0",
     },
@@ -32,10 +32,10 @@ async function main(): Promise<void> {
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("@godrix/mcp-architecture-contract started (stdio)");
+  console.error("@godrix/architecture-contract-mcp started (stdio)");
 }
 
 main().catch((err) => {
-  console.error("@godrix/mcp-architecture-contract fatal:", err);
+  console.error("@godrix/architecture-contract-mcp fatal:", err);
   process.exit(1);
 });

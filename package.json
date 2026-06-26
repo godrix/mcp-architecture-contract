@@ -1,11 +1,11 @@
 {
-  "name": "@godrix/mcp-architecture-contract",
+  "name": "@godrix/architecture-contract-mcp",
   "version": "1.1.2",
   "description": "Architecture Contract MCP — agnostic architecture discovery, scaffolding and validation via arc.yaml",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "mcp-architecture-contract": "dist/index.js"
+    "architecture-contract-mcp": "dist/index.js"
   },
   "files": [
     "dist",
